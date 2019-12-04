@@ -68,7 +68,7 @@ function createFeatures(earthquakeData) {
 }
 function createMap(earthquakes) {
 
-  // Define streetmap and darkmap layers
+ // Define streetmap and darkmap layers
   var streetmap = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}", {
     attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
     maxZoom: 18,
@@ -90,6 +90,8 @@ function createMap(earthquakes) {
     accessToken: API_KEY
   });
 
+  // lightmap.addTo(myMap);
+
   // Define a baseMaps object to hold our base layers
   var baseMaps = {
     "Street Map": streetmap,
@@ -108,8 +110,16 @@ function createMap(earthquakes) {
       37.09, -95.71
     ],
     zoom: 4,
-    layers: [lightmap, earthquakes]
+    layers: [darkmap, earthquakes]
+  //   layers: [
+  //     layers.
+  //     layers.EMPTY,
+  //     layers.LOW,
+  //     layers.NORMAL,
+  //     layers.OUT_OF_ORDER
+  // ]
   });
+
 
   // Create a layer control
   // Pass in our baseMaps and overlayMaps
@@ -117,4 +127,43 @@ function createMap(earthquakes) {
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap)
+
+  var colors = ["#98ee00", "#d4ee00", "#eecc00", "#ee9c00", "#ea822c", "#ea2c2c"];
+  // function color(magnitude) {
+  //   switch (true) {
+  //   case magnitude > 5:
+  //     return "#ea2c2c";
+  //   case magnitude > 4:
+  //     return "#ea822c";
+  //   case magnitude > 3:
+  //     return "#ee9c00";
+  //   case magnitude > 2:
+  //     return "#eecc00";
+  //   case magnitude > 1:
+  //     return "#d4ee00";
+  //   default:
+  //     return "#98ee00";
+  //   }
+  // }
+  var legend = L.control({position: 'bottomright'});
+
+  legend.onAdd = function (map) {
+
+      var div = L.DomUtil.create('div', 'info legend');
+      var grades = [0, 1, 2, 3, 4, 5,];
+
+      // loop through our density intervals and generate a label with a colored square for each interval
+      for (var i = 0; i < grades.length; i++) {
+          // console.log(colors[i]);
+
+          div.innerHTML +=
+              '<i style="background: ' + colors[i] + '"></i> ' +
+              grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+      }
+    
+  return div;
+  };
+
+  legend.addTo(myMap);
 }
+
